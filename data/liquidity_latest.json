@@ -1,18 +1,18 @@
 {
-  "updated_at": "2026-05-12T14:51:58.067563+00:00",
+  "updated_at": "2026-05-12T23:57:09.377094+00:00",
   "indicator": "Fed total assets - TGA - ON RRP",
   "unit": "USD millions",
   "latest": {
-    "date": "2026-05-11",
-    "net_liquidity_usd_mn": "5870342.867",
+    "date": "2026-05-12",
+    "net_liquidity_usd_mn": "5854914.801",
     "fed_total_assets_usd_mn": "6709505.000",
     "fed_total_assets_date": "2026-05-06",
-    "tga_usd_mn": "839161.000",
-    "tga_date": "2026-05-08",
-    "rrp_usd_mn": "1.133",
-    "rrp_date": "2026-05-11"
+    "tga_usd_mn": "854589.000",
+    "tga_date": "2026-05-11",
+    "rrp_usd_mn": "1.199",
+    "rrp_date": "2026-05-12"
   },
-  "change_from_previous_observation_usd_mn": -0.346,
+  "change_from_previous_observation_usd_mn": -0.066,
   "sources": {
     "fed_total_assets": {
       "series": "WALCL",
@@ -27,6 +27,14 @@
       "series": "RRPONTSYD",
       "bookmark": "https://www.newyorkfed.org/markets/desk-operations/reverse-repo",
       "machine_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=RRPONTSYD"
+    },
+    "sp500": {
+      "series": "SP500",
+      "machine_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=SP500"
+    },
+    "nasdaq": {
+      "series": "NASDAQCOM",
+      "machine_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=NASDAQCOM"
     }
   }
 }
