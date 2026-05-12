@@ -261,6 +261,131 @@ def write_report(snapshot: dict[str, object]) -> None:
     (REPORT_DIR / "liquidity_latest.md").write_text("\n".join(lines), encoding="utf-8")
 
 
+def write_pages_index(snapshot: dict[str, object]) -> None:
+    latest = snapshot["latest"]
+    assert isinstance(latest, dict)
+    net = float(latest["net_liquidity_usd_mn"])
+    updated = str(snapshot["updated_at"]).replace("+00:00", "Z")
+    html_text = f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fed/TGA/RRP Liquidity</title>
+  <style>
+    :root {{
+      color-scheme: light;
+      --bg: #f7f3ea;
+      --ink: #1f2933;
+      --muted: #6b7280;
+      --line: #d8d2c4;
+      --green: #167c6b;
+    }}
+    * {{ box-sizing: border-box; }}
+    body {{
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }}
+    main {{
+      width: min(1180px, calc(100vw - 32px));
+      margin: 28px auto 48px;
+    }}
+    header {{
+      display: flex;
+      gap: 18px;
+      align-items: flex-end;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 18px;
+      margin-bottom: 22px;
+    }}
+    h1 {{
+      margin: 0 0 8px;
+      font-size: clamp(26px, 4vw, 42px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }}
+    .meta {{
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }}
+    .metric {{
+      text-align: right;
+      min-width: 230px;
+    }}
+    .metric strong {{
+      display: block;
+      color: var(--green);
+      font-size: clamp(28px, 5vw, 46px);
+      line-height: 1;
+    }}
+    .metric span {{
+      color: var(--muted);
+      font-size: 14px;
+    }}
+    img {{
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--line);
+      background: var(--bg);
+    }}
+    table {{
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 22px;
+      font-size: 15px;
+    }}
+    th, td {{
+      border-bottom: 1px solid var(--line);
+      padding: 12px 8px;
+      text-align: left;
+    }}
+    td:nth-child(2), th:nth-child(2) {{ text-align: right; }}
+    a {{ color: var(--green); }}
+    @media (max-width: 720px) {{
+      header {{ display: block; }}
+      .metric {{ text-align: left; margin-top: 18px; }}
+    }}
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Fed/TGA/RRP Liquidity</h1>
+        <p class="meta">Net liquidity = Fed total assets - TGA - ON RRP<br>Updated: {html.escape(updated)}</p>
+      </div>
+      <div class="metric">
+        <strong>{net / 1_000_000:.3f}T</strong>
+        <span>USD net liquidity</span>
+      </div>
+    </header>
+
+    <img src="reports/liquidity_chart.svg" alt="Fed TGA RRP liquidity chart">
+
+    <table>
+      <thead>
+        <tr><th>Component</th><th>Value, USD mn</th><th>Data date</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Fed total assets</td><td>{float(latest['fed_total_assets_usd_mn']):,.0f}</td><td>{html.escape(latest['fed_total_assets_date'])}</td></tr>
+        <tr><td>TGA</td><td>{float(latest['tga_usd_mn']):,.0f}</td><td>{html.escape(latest['tga_date'])}</td></tr>
+        <tr><td>ON RRP</td><td>{float(latest['rrp_usd_mn']):,.0f}</td><td>{html.escape(latest['rrp_date'])}</td></tr>
+      </tbody>
+    </table>
+
+    <p class="meta">Data files: <a href="data/liquidity_latest.json">latest JSON</a> · <a href="data/liquidity_history.csv">history CSV</a></p>
+  </main>
+</body>
+</html>
+"""
+    (ROOT / "index.html").write_text(html_text, encoding="utf-8")
+
+
 def scale(value: float, low: float, high: float, size: float, reverse: bool = False) -> float:
     if high == low:
         return size / 2
@@ -761,6 +886,7 @@ def main() -> int:
         write_market_history(market_rows)
         write_market_chart(market_rows, snapshot)
     write_report(snapshot)
+    write_pages_index(snapshot)
     sync_desktop_outputs()
 
     latest = snapshot["latest"]

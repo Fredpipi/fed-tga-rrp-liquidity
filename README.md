@@ -15,6 +15,7 @@ All values are stored in USD millions.
 - `reports/liquidity_latest.md`: readable summary
 - `reports/liquidity_chart.svg`: chart source
 - `reports/liquidity_chart.svg.png`: chart image
+- `index.html`: GitHub Pages dashboard
 
 The script also copies daily outputs to:
 
@@ -46,6 +47,24 @@ Optional market comparison work is present in the script but disabled by default
 
 ```bash
 LIQUIDITY_WITH_MARKETS=1 python3 scripts/update_liquidity.py
+```
+
+## GitHub Actions and Pages
+
+The repository includes `.github/workflows/update-liquidity.yml`, which runs every day at `23:00 UTC` (`07:00 Asia/Shanghai`) and commits refreshed outputs back to the repository.
+
+To publish the dashboard:
+
+1. Open repository settings on GitHub.
+2. Go to **Pages**.
+3. Set **Source** to **Deploy from a branch**.
+4. Select branch `main` and folder `/ (root)`.
+5. Save.
+
+After GitHub Pages is enabled, the dashboard should be available at:
+
+```text
+https://fredpipi.github.io/fed-tga-rrp-liquidity/
 ```
 
 ## Notes
