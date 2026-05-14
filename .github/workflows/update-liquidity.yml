@@ -28,7 +28,14 @@ jobs:
         run: python3 scripts/update_liquidity.py
 
       - name: Commit updated outputs
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: Update liquidity indicator
-          file_pattern: data/*.csv data/*.json reports/*.svg reports/*.png reports/*.md index.html
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/*.csv data/*.json reports/*.svg reports/*.md index.html
+          git add reports/*.png 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No liquidity output changes to commit."
+          else
+            git commit -m "Update liquidity indicator"
+            git push
+          fi
