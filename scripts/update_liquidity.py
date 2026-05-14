@@ -476,15 +476,16 @@ def write_chart(rows: list[dict[str, str]], snapshot: dict[str, object]) -> None
     red = "#b83242"
 
     net_high, net_low = axis_labels(chart_rows, "net_liquidity_usd_mn")
-    comp_values = []
-    for row in chart_rows:
-        comp_values.extend(
-            [
-                float(row["fed_total_assets_usd_mn"]) / 1_000_000,
-                float(row["tga_usd_mn"]) / 1_000_000,
-                float(row["rrp_usd_mn"]) / 1_000_000,
-            ]
-        )
+    component_keys = ("fed_total_assets_usd_mn", "tga_usd_mn", "rrp_usd_mn")
+    comp_bases = {
+        key: next(float(row[key]) for row in chart_rows if float(row[key]) != 0)
+        for key in component_keys
+    }
+    comp_values = [
+        float(row[key]) / comp_bases[key] * 100
+        for row in chart_rows
+        for key in component_keys
+    ]
     comp_low, comp_high = nice_bounds(comp_values)
 
     def comp_poly(key: str) -> str:
@@ -493,7 +494,8 @@ def write_chart(rows: list[dict[str, str]], snapshot: dict[str, object]) -> None
         end_date = parse_iso_date(chart_rows[-1]["date"])
         for row in chart_rows:
             x = x_for_date(parse_iso_date(row["date"]), start_date, end_date, x1, plot_w)
-            y = y1 + scale(float(row[key]) / 1_000_000, comp_low, comp_high, plot2_h, reverse=True)
+            indexed = float(row[key]) / comp_bases[key] * 100
+            y = y1 + scale(indexed, comp_low, comp_high, plot2_h, reverse=True)
             points.append(f"{x:.1f},{y:.1f}")
         return " ".join(points)
 
@@ -530,7 +532,7 @@ def write_chart(rows: list[dict[str, str]], snapshot: dict[str, object]) -> None
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">
   <rect width="100%" height="100%" fill="{bg}"/>
   <text x="60" y="58" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" fill="{ink}">Fed / TGA / ON RRP Liquidity</text>
-  <text x="60" y="91" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="{muted}">Net liquidity = Fed total assets - TGA - ON RRP. Values in USD trillions.</text>
+  <text x="60" y="91" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="{muted}">Net liquidity in USD trillions; components indexed to compare trends.</text>
   <text x="60" y="121" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="{green}" font-weight="700">Latest: {net:.3f}T</text>
   <text x="210" y="121" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="{muted}">date range: {html.escape(start)} to {html.escape(end)} | updated: {html.escape(updated)}</text>
 
@@ -543,17 +545,17 @@ def write_chart(rows: list[dict[str, str]], snapshot: dict[str, object]) -> None
   <polyline fill="none" stroke="{green}" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" points="{polyline(chart_rows, 'net_liquidity_usd_mn', x0, y0, plot_w, plot_h)}"/>
 
   <rect x="{x1}" y="{y1}" width="{plot_w}" height="{plot2_h}" fill="none" stroke="#b8b0a0" stroke-width="1"/>
-  <text x="{x1}" y="{y1 - 20}" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="{ink}">Components</text>
+  <text x="{x1}" y="{y1 - 20}" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="{ink}">Components trend (start = 100)</text>
   <polyline fill="none" stroke="{blue}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="{comp_poly('fed_total_assets_usd_mn')}"/>
   <polyline fill="none" stroke="{amber}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="{comp_poly('tga_usd_mn')}"/>
   <polyline fill="none" stroke="{red}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="{comp_poly('rrp_usd_mn')}"/>
-  <text x="30" y="{y1 + 6}" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="{muted}">{comp_high:.2f}T</text>
-  <text x="30" y="{y1 + plot2_h}" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="{muted}">{comp_low:.2f}T</text>
+  <text x="30" y="{y1 + 6}" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="{muted}">{comp_high:.1f}</text>
+  <text x="30" y="{y1 + plot2_h}" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="{muted}">{comp_low:.1f}</text>
   <circle cx="875" cy="466" r="6" fill="{blue}"/><text x="890" y="471" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="{ink}">Fed assets</text>
   <circle cx="985" cy="466" r="6" fill="{amber}"/><text x="1000" y="471" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="{ink}">TGA</text>
   <circle cx="1055" cy="466" r="6" fill="{red}"/><text x="1070" y="471" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="{ink}">ON RRP</text>
 
-  <text x="60" y="714" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="{muted}">Latest component dates: Fed {html.escape(latest['fed_total_assets_date'])}, TGA {html.escape(latest['tga_date'])}, RRP {html.escape(latest['rrp_date'])}.</text>
+  <text x="60" y="714" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="{muted}">Lower chart indexes each component to 100 on {html.escape(start)}. Latest component dates: Fed {html.escape(latest['fed_total_assets_date'])}, TGA {html.escape(latest['tga_date'])}, RRP {html.escape(latest['rrp_date'])}.</text>
   <text x="60" y="736" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="{muted}">Source pages: Federal Reserve H.4.1, Treasury DTS, New York Fed reverse repo operations.</text>
 </svg>
 '''
