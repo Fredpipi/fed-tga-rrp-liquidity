@@ -68,7 +68,8 @@ class Point:
 
 def get_text(url: str) -> str:
     last_error: subprocess.CalledProcessError | None = None
-    for attempt in range(2):
+    max_attempts = 5
+    for attempt in range(max_attempts):
         try:
             result = subprocess.run(
                 ["curl", "-g", "-L", "--silent", "--show-error", "--connect-timeout", "10", "--max-time", "25", url],
@@ -79,7 +80,7 @@ def get_text(url: str) -> str:
             return result.stdout
         except subprocess.CalledProcessError as exc:
             last_error = exc
-            if attempt < 1:
+            if attempt < max_attempts - 1:
                 time.sleep(3 * (attempt + 1))
     assert last_error is not None
     raise last_error
