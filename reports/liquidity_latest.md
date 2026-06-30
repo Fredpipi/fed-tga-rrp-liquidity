@@ -1,17 +1,17 @@
 # Liquidity Indicator
 
-Updated at: 2026-06-29T00:04:42.696831+00:00
+Updated at: 2026-06-30T00:00:07.084470+00:00
 
-Net liquidity: 5,864,170 USD mn (5.864 USD tn)
-Change from previous observation: -1 USD mn
+Net liquidity: 5,840,065 USD mn (5.840 USD tn)
+Change from previous observation: 3 USD mn
 
 Formula: Fed total assets - TGA - ON RRP
 
 | Component | Value, USD mn | Data date |
 | --- | ---: | --- |
 | Fed total assets | 6,735,645 | 2026-06-24 |
-| TGA | 871,469 | 2026-06-25 |
-| ON RRP | 6 | 2026-06-26 |
+| TGA | 895,576 | 2026-06-26 |
+| ON RRP | 4 | 2026-06-29 |
 
 Sources:
 - H.4.1: https://www.federalreserve.gov/Releases/H41/default.htm
