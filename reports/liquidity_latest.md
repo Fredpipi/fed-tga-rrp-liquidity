@@ -1,6 +1,6 @@
 # Liquidity Indicator
 
-Updated at: 2026-07-04T00:01:51.125656+00:00
+Updated at: 2026-07-04T23:59:03.742391+00:00
 
 Net liquidity: 5,953,975 USD mn (5.954 USD tn)
 Change from previous observation: 36,771 USD mn
