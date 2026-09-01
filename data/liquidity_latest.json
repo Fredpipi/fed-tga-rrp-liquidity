@@ -1,18 +1,18 @@
 {
-  "updated_at": "2026-08-31T01:03:12.663901+00:00",
+  "updated_at": "2026-09-01T01:34:59.490287+00:00",
   "indicator": "Fed total assets - TGA - ON RRP",
   "unit": "USD millions",
   "latest": {
-    "date": "2026-08-28",
-    "net_liquidity_usd_mn": "5780107.825",
+    "date": "2026-08-31",
+    "net_liquidity_usd_mn": "5759562.274",
     "fed_total_assets_usd_mn": "6730912.000",
     "fed_total_assets_date": "2026-08-26",
-    "tga_usd_mn": "950804.000",
-    "tga_date": "2026-08-27",
-    "rrp_usd_mn": "0.175",
-    "rrp_date": "2026-08-28"
+    "tga_usd_mn": "971343.000",
+    "tga_date": "2026-08-28",
+    "rrp_usd_mn": "6.726",
+    "rrp_date": "2026-08-31"
   },
-  "change_from_previous_observation_usd_mn": 0.281,
+  "change_from_previous_observation_usd_mn": -6.551,
   "sources": {
     "fed_total_assets": {
       "series": "WALCL",
